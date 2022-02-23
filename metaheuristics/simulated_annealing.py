@@ -18,7 +18,7 @@ def linear_temp_decay(alpha: float, min_temperature: float, temperature: float) 
     return max(alpha * temperature, min_temperature)
 
 def simulated_annealing(num_iterations: int, neighborhood_fn, energy_fn, clips: np.ndarray,
-                        temperature: float, temperature_decay = None) -> Tuple[float, float]:
+                        temperature: float, temperature_decay = None, make_gif = False) -> Tuple[float, float]:
     """Minimizes energy
     Args:
         neighborhood_fn: Takes a position and returns a new position
