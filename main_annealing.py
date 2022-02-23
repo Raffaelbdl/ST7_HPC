@@ -7,11 +7,12 @@ from functools import partial
 min, max, step = -10., 10.01, 1
 clips = np.array([[min, max], [min, max]])
 
+# with 2 artificial minimas
 f, f_min = generate_random_interpolation(min, max, step)
 
 energy_fn = partial(evaluate_pos2d, f_2d=f)
 neighborhood_fn = neighborhood_disk
-temperature_decay = partial(linear_temp_decay, alpha=0.999, min_temperature=1)
+temperature_decay = partial(linear_temp_decay, alpha=0.99, min_temperature=1)
 
 best_pos, best_energy = simulated_annealing(100000, neighborhood_fn, energy_fn, clips, 100, temperature_decay)
 print("best energy annealing ", best_energy) 
