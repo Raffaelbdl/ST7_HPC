@@ -7,7 +7,7 @@ from functools import partial
 min, max, step = -10., 10.01, 1
 clips = np.array([[min, max], [min, max]])
 
-# with 2 artificial minimas
+# with a2 artificial minimas
 f, f_min = generate_random_interpolation(min, max, step)
 
 energy_fn = partial(evaluate_pos2d, f_2d=f)
