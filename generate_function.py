@@ -11,7 +11,7 @@ def generate_random_interpolation(min: float, max: float, step: float) -> interp
     xx, yy = np.meshgrid(x, y)
     z = np.random.uniform(-0.1, 0.1, size=xx.shape)
 
-    return interpolate.interp2d(x, y, z)
+    return interpolate.interp2d(x, y, z), np.min(z)
 
 def plot_random_interpolation(f: interpolate.interp2d, min: float, max: float, step: float, frac: float) -> Tuple[plt.figure, plt.axes]:
     

@@ -13,8 +13,12 @@ def evaluate_pos2d(pos2d: np.ndarray, f_2d) -> float:
 
     return f_2d(pos2d[0], pos2d[1])
 
+def linear_temp_decay(alpha: float, min_temperature: float, temperature: float) -> float:
+    
+    return max(alpha * temperature, min_temperature)
+
 def simulated_annealing(num_iterations: int, neighborhood_fn, energy_fn, clips: np.ndarray,
-                        temperature: float) -> Tuple[float, float]:
+                        temperature: float, temperature_decay = None) -> Tuple[float, float]:
     """Minimizes energy
     Args:
         neighborhood_fn: Takes a position and returns a new position
@@ -44,4 +48,7 @@ def simulated_annealing(num_iterations: int, neighborhood_fn, energy_fn, clips: 
             pos = new_pos
             energy = new_energy
         
+        if temperature_decay is not None:
+            temperature = temperature_decay(temperature=temperature)
+
     return best_pos, best_energy
