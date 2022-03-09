@@ -1,0 +1,7 @@
+# 1  : Date
+# 4  : Numéro de cycle
+# 3  : Efficacité parallèle précédente
+# 4  : Equilibrage effectué (0 : non, 1 : oui)
+# 5  : Nouvelle efficacité
+#     1            2     3   4  5
+0.00000000e+00        0 0.78 1 0.87
