@@ -14,32 +14,32 @@ def _relief() -> Tuple[np.ndarray]:
     return x, y
 
 
-def plot_relief(*args) -> None:
+def plot_relief(**args) -> None:
     x, y = _relief()
 
-    plt.plot(x, y, *args)
+    plt.plot(x, y, **args)
 
 
 def scatter_source(
     x_source: int = 19392, 
     y_source: int = 4290, 
-    *args
+    **args
 ) -> None:
 
     x_source = 19392
     y_source = 4290
 
-    plt.scatter(x_source, y_source, *args)
+    plt.scatter(x_source, y_source, **args)
 
 
 def scatter_stations(
     path_to_stations: str,
-    *args
+    **args
 ) -> None:
 
     stations = np.loadtxt(path_to_stations)
 
-    plt.scatter(stations[..., 0], stations[..., 1], *args)
+    plt.scatter(stations[..., 0], stations[..., 1], **args)
 
 
 def _scatter_stations_intensity(
@@ -87,7 +87,7 @@ def scatter_stations_intensity(
     simulation: str,
     path_to_stations: str,
     norm: str,
-    *args,
+    **args,
 ):
     """
     Implemented norms are:
@@ -101,13 +101,13 @@ def scatter_stations_intensity(
         norm
     )
 
-    plt.scatter(xs, signals, *args)
+    plt.scatter(xs, signals, **args)
     
 
 def plot_station_signal(
     simulation: str, 
     station: int,
-    *args,
+    **args,
 ):
     path_to_te = "./2D_coupe/" + simulation + "/TE/"
     station = "STATION_ST" + str(station)
@@ -116,7 +116,7 @@ def plot_station_signal(
     timeline = station_array[..., 0]
     signal = station_array[..., 1]
 
-    plt.plot(timeline, signal, *args)
+    plt.plot(timeline, signal, **args)
     
     
 
