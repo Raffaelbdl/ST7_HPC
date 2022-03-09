@@ -1,5 +1,5 @@
 from metaheuristics.simulated_annealing import simulated_annealing, neighborhood_disk, evaluate_pos2d, linear_temp_decay
-from generate_function import generate_random_interpolation, generate_sinusoidal_interpolation, plot_interpolation
+from metaheuristics.generate_function import generate_random_interpolation, generate_sinusoidal_interpolation, plot_interpolation
 import numpy as np
 import matplotlib.pyplot as plt
 from functools import partial
