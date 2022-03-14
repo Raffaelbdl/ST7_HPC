@@ -32,10 +32,11 @@ for station in stations:
 
     intensities.append(intensity)
     intensities_wout.append(intensitiy_wout)
-   ##i_max.append(intensity_max)
+    ##i_max.append(intensity_max)
 
     station_id = int(station[10:])
     ids.append(station_id)
+
 
 for station in stations1:
     array = np.loadtxt(open(os.path.join(path_to_te1, station)))
@@ -73,6 +74,12 @@ for station in stations2:
     station_id = int(station[10:])
     ids2.append(station_id)
 
+plt.plot(intensities, color = "r")
+plt.plot(intensities1, color = "g")
+plt.plot(intensities2, color = "b")
+
+plt.show()
+
 ## On place une zone interdite autour de la source
 intensities = intensities[:51]+intensities[69:]
 intensities1= intensities1[:51]+intensities1[69:]
@@ -87,15 +94,29 @@ intensities2 = intensities2/np.max(intensities2)
 
 ## Première approche
 def f(x):
-    return 1/(1+np.exp(15*(0.4-x)))
+    return 1/(1+np.exp(10*(0.4-x)))
 
-intensities_sol1 = f(intensities)
-intensities1_sol1 = f(intensities1)
-intensities2_sol1 = f(intensities2)
+def f2(x):
+    return 1-np.exp(-5*x)
+
+intensities_sol1 = f2(intensities)
+intensities1_sol1 = f2(intensities1)
+intensities2_sol1 = f2(intensities2)
+
+plt.plot(intensities, color = "r")
+plt.plot(intensities1, color = "g")
+plt.plot(intensities2, color = "b")
+
+plt.show()
 
 plt.plot(intensities1_sol1)
 plt.plot(intensities1, color = "r")
 plt.show()
+
+plt.plot(intensities2_sol1)
+plt.plot(intensities2, color = "g")
+plt.show()
+
 sum_sol = intensities1 + intensities2 + intensities
 print(np.where(sum_sol == np.max(sum_sol)))
 print(sum_sol[50], np.max(sum_sol))
