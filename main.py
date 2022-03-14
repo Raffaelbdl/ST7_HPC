@@ -1,4 +1,3 @@
-from pyexpat.errors import XML_ERROR_RECURSIVE_ENTITY_REF
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -6,9 +5,12 @@ from simulations import plots
 
 ### PATH ###
 path_to_stations = "./2D_coupe/stations_2D_coupe"
-simulation_name1 = "2D_coupe_meteo1"
-simulation_name2 = "2D_coupe_meteo2"
-simulation_name3 = "2D_coupe_hors_sol"
+simulation_name1 = "2D_coupe_10m_meteo1"
+simulation_name2 = "2D_coupe_10m_meteo2"
+simulation_name3 = "2D_coupe_10m_ssvent"
+# simulation_name1 = "2D_coupe_meteo1"
+# simulation_name2 = "2D_coupe_meteo2"
+# simulation_name3 = "2D_coupe_hors_sol"
 
 ### GET RELIEF ###
 x_relief, y_relief = plots._relief()
@@ -94,14 +96,20 @@ if __name__ == "__main__":
         ax2.scatter(x1, signals_inf, c='k')
         ax2.scatter(x12, signals_inf2, c='orange')
         ax2.scatter(x13, signals_inf3, c='b')
-        ax2.legend(["Norme Infinie Meteo", "Norme Infinie Meteo", "Norme Infinie Sans Vent"], loc='upper right')
+        ax2.legend(["Norme Infinie Meteo 1", "Norme Infinie Meteo 2", "Norme Infinie Sans Vent"], loc='upper right')
     elif norm == "L2":
         ax2.scatter(x2, signals_l2, c='cyan')
         ax2.scatter(x22, signals_l22, c='pink')
-        ax2.scatter(x23, signals_l23, c='yellow')
+        ax2.scatter(x23, signals_l23, c='k')
         ax2.legend(["Norme 2 1", "Norme 2 2", "Norme 2 3"], loc='upper right')
+        
+    # ax2.scatter(x13, signals_inf3, c='b')
+    # ax2.scatter(x23, signals_l23, c='k')
+    # ax2.legend(["Norme Infinie Sans Vent", "Norme 2 Sans Vent"])
+
     ax2.set_ylabel("Surpression (Pa)")
 
+    ### STATIONS MARKERS ###
     # ax2.scatter(per_pos, per_pos_y, marker="x")
     
     # plots.plot_station_signal("2D_coupe_hors_sol", 36, c='r')

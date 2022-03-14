@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import json
+
 
 with open("./250m/topoIS_2D_ymax.dat", "r") as f:
     topology = np.loadtxt(f)
