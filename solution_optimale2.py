@@ -76,7 +76,6 @@ if __name__ == "__main__":
     intensities1= signals_l22
     intensities2=signals_l23
 
-
     intensities = np.append(intensities[:51],intensities[69:])
     intensities1= np.append(intensities1[:51],intensities1[69:])
     intensities2 = np.append(intensities2[:51],intensities2[69:])
