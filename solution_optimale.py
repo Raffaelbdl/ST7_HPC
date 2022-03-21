@@ -19,6 +19,14 @@ intensities, intensities1, intensities2 = [], [], []
 intensities_wout, intensities_wout1, intensities_wout2 = [], [], []
 
 ids, ids1, ids2= [], [], []
+
+
+##########################################
+        #CHARGEMENT DES DONNÉES# 
+##########################################
+
+############# PAS DE VENT ################
+dico_int={}
 for station in stations:
     array = np.loadtxt(open(os.path.join(path_to_te, station)))
     _array = array[..., 1] - 1e5
@@ -29,15 +37,21 @@ for station in stations:
     # valeur efficace
     intensity = np.sqrt(np.mean(np.square(_array[non_nul:])))
     intensitiy_wout = np.sqrt(np.mean(np.square(array[..., 1] - 1e5)))
+    
+    #on met tout dans un dico qui classe tout 
+    dico_int[station[10:]] = intensitiy_wout
 
-    intensities.append(intensity)
-    intensities_wout.append(intensitiy_wout)
-    ##i_max.append(intensity_max)
+#on met toutes les valeures stockées dans la liste des intensitées
+numList=[]
+for num in list(dico_int.keys()):
+    numList.append(int(num))
+for num in sorted(numList):
+    intensities.append(dico_int[str(num)])
 
-    station_id = int(station[10:])
-    ids.append(station_id)
 
+########## METEO1 ##############
 
+dico_int={}
 for station in stations1:
     array = np.loadtxt(open(os.path.join(path_to_te1, station)))
     _array = array[..., 1] - 1e5
@@ -49,13 +63,19 @@ for station in stations1:
     intensity = np.sqrt(np.mean(np.square(_array[non_nul:])))
     intensitiy_wout = np.sqrt(np.mean(np.square(array[..., 1] - 1e5)))
 
-    intensities1.append(intensity)
-    intensities_wout1.append(intensitiy_wout)
-   ##i_max.append(intensity_max)
+    dico_int[station[10:]] = intensitiy_wout
 
-    station_id = int(station[10:])
-    ids1.append(station_id)
+#on met toutes les valeures stockées dans la liste des intensitées
+numList=[]
+for num in list(dico_int.keys()):
+    numList.append(int(num))
+for num in sorted(numList):
+    intensities1.append(dico_int[str(num)])
 
+
+
+############# METEO 2 ####################
+dico_int={}
 for station in stations2:
     array = np.loadtxt(open(os.path.join(path_to_te2, station)))
     _array = array[..., 1] - 1e5
@@ -67,24 +87,27 @@ for station in stations2:
     intensity = np.sqrt(np.mean(np.square(_array[non_nul:])))
     intensitiy_wout = np.sqrt(np.mean(np.square(array[..., 1] - 1e5)))
 
-    intensities2.append(intensity)
-    intensities_wout2.append(intensitiy_wout)
-   ##i_max.append(intensity_max)
+    dico_int[station[10:]] = intensitiy_wout
 
-    station_id = int(station[10:])
-    ids2.append(station_id)
+#on met toutes les valeures stockées dans la liste des intensitées
+numList=[]
+for num in list(dico_int.keys()):
+    numList.append(int(num))
+for num in sorted(numList):
+    intensities2.append(dico_int[str(num)])
 
-plt.plot(intensities, color = "r")
-plt.plot(intensities1, color = "g")
-plt.plot(intensities2, color = "b")
 
-plt.show()
+##########################################
+        #PROCESSING DES DONNÉES# 
+##########################################
 
-## On place une zone interdite autour de la source
+# On place une zone interdite autour de la source
+
 intensities = intensities[:51]+intensities[69:]
 intensities1= intensities1[:51]+intensities1[69:]
 intensities2 = intensities2[:51]+intensities2[69:]
 
+# on normalise les données
 intensities = (intensities - np.min(intensities))
 intensities = intensities/np.max(intensities)
 intensities1 = (intensities1 - np.min(intensities1))
@@ -92,21 +115,18 @@ intensities1 = intensities1/np.max(intensities1)
 intensities2 = (intensities2 - np.min(intensities2))
 intensities2 = intensities2/np.max(intensities2)
 
-## Première approche
+# Première approche
 def f(x):
-    return 1/(1+np.exp(10*(0.4-x)))
+    return 1/(1+np.exp(10*(0.35-x)))
 
-def f2(x):
-    return 1-np.exp(-5*x)
 
-intensities_sol1 = f2(intensities)
-intensities1_sol1 = f2(intensities1)
-intensities2_sol1 = f2(intensities2)
+intensities_sol1 = f(intensities) - f(0)
+intensities1_sol1 = f(intensities1) - f(0)
+intensities2_sol1 = f(intensities2) - f(0)
 
+"""
 plt.plot(intensities, color = "r")
-plt.plot(intensities1, color = "g")
-plt.plot(intensities2, color = "b")
-
+plt.plot(intensities_sol1)
 plt.show()
 
 plt.plot(intensities1_sol1)
@@ -114,9 +134,46 @@ plt.plot(intensities1, color = "r")
 plt.show()
 
 plt.plot(intensities2_sol1)
-plt.plot(intensities2, color = "g")
+plt.plot(intensities2, color = "r")
 plt.show()
 
-sum_sol = intensities1 + intensities2 + intensities
-print(np.where(sum_sol == np.max(sum_sol)))
-print(sum_sol[50], np.max(sum_sol))
+plt.plot(intensities_sol1, color = "r")
+plt.plot(intensities1_sol1, color = "g")
+plt.plot(intensities2, color = "b")
+plt.show()
+"""
+
+sum_sol_correct = intensities1_sol1 + intensities2_sol1 + intensities_sol1
+sum_sol_correct = np.concatenate((sum_sol_correct[:51], [0]*18, sum_sol_correct[51:]))
+intensities = np.concatenate((intensities[:51], [0]*18, intensities[51:]))
+intensities1 = np.concatenate((intensities1[:51], [0]*18, intensities1[51:]))
+intensities2 = np.concatenate((intensities2[:51], [0]*18, intensities2[51:]))
+
+
+plt.plot(sum_sol_correct, color ="k")
+plt.plot(intensities, color = "r", alpha = 0.5)
+plt.plot(intensities1, color = "g", alpha = 0.5)
+plt.plot(intensities2, color = "b", alpha = 0.5)
+plt.show()
+
+best_index = np.where(sum_sol_correct == np.max(sum_sol_correct))[0][0]
+stations_irl = np.loadtxt("stations_2D_coupe_1")
+
+
+with open("./2D_coupe/topoIS_2D_ymax.dat", "r") as f:
+    topology = np.loadtxt(f)
+relief = topology[...,2]
+# x = np.arange(len(relief))
+x = topology[..., 0]
+
+x_source = 19382
+y_source = 4290
+
+xBest = stations_irl[best_index+5][1]
+yBest = stations_irl[best_index+5][2]
+
+
+plt.plot(x, relief, color = "blue")
+plt.scatter(x_source, y_source, c='r', s=100)
+plt.scatter(xBest, yBest, c='g', s=100)
+plt.show()
