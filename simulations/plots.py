@@ -14,10 +14,37 @@ def _relief() -> Tuple[np.ndarray]:
     return x, y
 
 
+def _relief3D() -> Tuple[np.ndarray]:
+    with open("./3D_coupe/topoIS_3D.dat", "r") as f:
+        topology = np.loadtxt(f)
+
+    x = topology[..., 0]
+    y = topology[..., 1]
+    z = topology[..., 2]
+
+    return x, y, z
+
+
 def plot_relief(**args) -> None:
     x, y = _relief()
 
     plt.plot(x, y, **args)
+
+
+def plot_relief3D(**args) -> None:
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    
+    x, y, z = _relief3D()
+    idx = np.arange(0, len(x), step=100)
+
+    x = x[idx]
+    y = y[idx]
+    z = z[idx]
+
+    ax.plot_trisurf(x, y, z, **args)
+
+    return fig, ax
+
 
 
 def scatter_source(
