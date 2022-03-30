@@ -25,6 +25,7 @@ ids, ids1, ids2= [], [], []
         #CHARGEMENT DES DONNÉES# 
 ##########################################
 
+print("loading data ...")
 ############# PAS DE VENT ################
 dico_int={}
 for station in stations:
@@ -89,6 +90,8 @@ for station in stations2:
 
     dico_int[station[10:]] = intensitiy_wout
 
+
+
 #on met toutes les valeures stockées dans la liste des intensitées
 numList=[]
 for num in list(dico_int.keys()):
@@ -97,9 +100,11 @@ for num in sorted(numList):
     intensities2.append(dico_int[str(num)])
 
 
+
 ##########################################
         #PROCESSING DES DONNÉES# 
 ##########################################
+print("processing data ...")
 
 # On place une zone interdite autour de la source
 
@@ -144,22 +149,34 @@ plt.show()
 """
 
 sum_sol_correct = intensities1_sol1 + intensities2_sol1 + intensities_sol1
+
 sum_sol_correct = np.concatenate((sum_sol_correct[:51], [0]*18, sum_sol_correct[51:]))
 intensities = np.concatenate((intensities[:51], [0]*18, intensities[51:]))
 intensities1 = np.concatenate((intensities1[:51], [0]*18, intensities1[51:]))
 intensities2 = np.concatenate((intensities2[:51], [0]*18, intensities2[51:]))
 
+print("choosing optimal stations ...")
 
-plt.plot(sum_sol_correct, color ="k", label = "somme")
-plt.plot(intensities, color = "r", alpha = 0.5, label = "pas de vent")
-plt.plot(intensities1, color = "g", alpha = 0.5, label = "meteo 1")
-plt.plot(intensities2, color = "b", alpha = 0.5, label = "meteo 2")
-plt.legend()
+##Choix des valeures max pour deux balises
+current_max=0
+current_max_index = [0, 1]
+for i in range(len(sum_sol_correct)):
+    for j in range(len(sum_sol_correct)):
+        if i!=j :
+            test_value = sum_sol_correct[i]+sum_sol_correct[j]
+            if test_value > current_max :
+                current_max = test_value
+                current_max_index = [i, j]
+
+"""
+plt.plot(sum_sol_correct, color ="k")
+plt.plot(intensities, color = "r", alpha = 0.5)
+plt.plot(intensities1, color = "g", alpha = 0.5)
+plt.plot(intensities2, color = "b", alpha = 0.5)
 plt.show()
+"""
 
-best_index = np.where(sum_sol_correct == np.max(sum_sol_correct))[0][0]
-stations_irl = np.loadtxt("stations_2D_coupe_1")
-
+print("printing results ...")
 
 with open("./2D_coupe/topoIS_2D_ymax.dat", "r") as f:
     topology = np.loadtxt(f)
@@ -167,15 +184,27 @@ relief = topology[...,2]
 # x = np.arange(len(relief))
 x = topology[..., 0]
 
+stations_irl = np.loadtxt("stations_2D_coupe_1")
+stations_x =[]
+for i in range(5,85):
+    stations_x.append(stations_irl[:,1][i])
+
+
+
 x_source = 19382
 y_source = 4290
 
-xBest = stations_irl[best_index+5][1]
-yBest = stations_irl[best_index+5][2]
+xBest1 = stations_irl[current_max_index[0]+5][1]
+yBest1 = stations_irl[current_max_index[0]+5][2]
+xBest2 = stations_irl[current_max_index[1]+5][1]
+yBest2 = stations_irl[current_max_index[1]+5][2]
+
 
 
 plt.plot(x, relief, color = "blue")
-plt.plot([stations_irl[51+5][1],stations_irl[51+5][1],stations_irl[68+5][1], stations_irl[68+5][1], stations_irl[51+5][1]],[1000, 6000, 6000, 1000, 1000], color = "y", alpha = 0.5 )
+plt.plot(stations_x,sum_sol_correct*3000, color ="k", alpha = 0.5)
+plt.plot([stations_irl[51+5][1],stations_irl[51+5][1],stations_irl[68+5][1], stations_irl[68+5][1], stations_irl[51+5][1]],[0, 6000, 6000, 0, 0], color = "y", alpha = 0.5 )
 plt.scatter(x_source, y_source, c='r', s=100)
-plt.scatter(xBest, yBest, c='g', s=100)
+plt.scatter(xBest1, yBest1, c='g', s=100)
+plt.scatter(xBest2, yBest2, c='g', s=100)
 plt.show()
