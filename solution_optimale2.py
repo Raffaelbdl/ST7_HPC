@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from simulations import plots
+from utils import plots
 
 ### PATH ###
 path_to_stations = "./2D_coupe/stations_2D_coupe"
