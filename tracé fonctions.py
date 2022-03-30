@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-X = np.linspace(0,1,200)
+X = np.linspace(0,12000,500)
 
 def f(x):
-    return 1/(1+np.exp(10*(0.35-x)))
-
-Y= f(X)-f(0)
+    return min(x/10000,1)
+Y= np.zeros(500)
+for i in range(len(Y)):
+    Y[i] = f(X[i])
 
 plt.plot(X,Y, color="r")
-plt.plot(X,X, color = "blue")
+
 plt.show()

@@ -1,25 +1,22 @@
-import numpy as np
-import csv
+import matplotlib.pyplot as plt
+from utils import plots
 
-# a = np.loadtxt("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM")
-# print(a)
+### PATH ###
+path_to_stations = "./3D_coupe/stations_3D_coupe"
+simulation_name1 = "3D_pas_100m_meteo0_corr"
 
-stations = []
 
-with open("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM", "r") as f:
-    a = csv.reader(f, delimiter=' ')
-    for row in a:
-        print(row)
-        if row[0][:2] == 'ST':
-            stations.append(
-                [
-                    row[1],
-                    row[2],
-                    row[3]
-                ]
-            )
+source2 = (14412, 16624, 00)
 
-stations = np.array(stations, dtype=np.float32)
-print(stations)
+xs, ys, signals = plots._scatter_stations_intensity_3D(
+    simulation=simulation_name1,
+    path_to_stations=path_to_stations,
+    norm='Inf'
+)
 
-np.savetxt("./3D_coupe/stations_3D_coupe", stations)
+
+fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+
+ax.scatter3D(*source2, c='r', s=100, zorder=10)
+ax.scatter3D(xs, ys, signals)
+plt.show()

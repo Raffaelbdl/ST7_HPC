@@ -6,13 +6,15 @@ import csv
 
 stations = []
 
-with open("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM", "r") as f:
+with open("./3D_coupe/3D_pas_100m_meteo0/TE/STATION_NOM", "r") as f:
     a = csv.reader(f, delimiter=' ')
     for row in a:
         print(row)
         if row[0][:2] == 'ST':
+            num = int(row[0][2:])
             stations.append(
                 [
+                    num,
                     row[1],
                     row[2],
                     row[3],
