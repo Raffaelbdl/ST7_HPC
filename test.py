@@ -1,17 +1,25 @@
-from os import stat
-from tqdm import tqdm
-import json
+import numpy as np
+import csv
 
+# a = np.loadtxt("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM")
+# print(a)
 
-xmin = -10e3
-ymin = 1e3
-Lx = 40e3
-Ly = 11e3
+stations = []
 
-station_coord = []
-for x in range(0, int(Lx*4*1e-3)):
-    for y in range(0, int(Ly*4*1e-3)):
-        coord = (xmin + 1e3*x/4, ymin + 1e3*y/4)
-        station_coord.append(coord)
-print(len(station_coord))
-json.dump(station_coord, open("station_500m.json", "w"))
+with open("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM", "r") as f:
+    a = csv.reader(f, delimiter=' ')
+    for row in a:
+        print(row)
+        if row[0][:2] == 'ST':
+            stations.append(
+                [
+                    row[1],
+                    row[2],
+                    row[3]
+                ]
+            )
+
+stations = np.array(stations, dtype=np.float32)
+print(stations)
+
+np.savetxt("./3D_coupe/stations_3D_coupe", stations)

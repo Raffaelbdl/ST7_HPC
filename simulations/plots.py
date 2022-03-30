@@ -129,6 +129,46 @@ def scatter_stations_intensity(
     )
 
     plt.scatter(xs, signals, **args)
+
+def _scatter_stations_intensity_3D(
+    simulation: str,
+    path_to_stations: str,
+    norm: str
+):
+    """
+    Implemented norms are:
+        L2 : sqrt( mean ( square ( surpression ) ) )
+        Inf : max ( abs ( surpression ) )
+    """
+    path_to_te = "./3D_coupe/" + simulation + "/TE/"
+    stations_name = [s for s in os.listdir(path_to_te) if "STATION_ST" in s]
+
+    stations = np.loadtxt(path_to_stations)
+
+    ids = []
+    signals = []
+    for station in stations_name:
+        station_array = np.loadtxt(open(os.path.join(path_to_te, station)))
+
+        signal = station_array[..., 1] - 1e5
+        try:
+            non_zero = np.min(np.where(signal != 0))
+        except:
+            non_zero = 0
+        signal_trunc = signal[non_zero:]
+
+        if norm == "L2":
+            signal_trunc = np.sqrt(np.mean(np.square(signal_trunc)))
+        elif norm == "Inf":
+            signal_trunc = np.max(np.abs(signal_trunc))
+        
+        signals.append(signal_trunc)
+        ids.append(int(station[10:]))
+
+    xs = stations[..., 1][np.array(ids)]
+    signals = np.array(signals)
+
+    return xs, signals
     
 
 def plot_station_signal(
