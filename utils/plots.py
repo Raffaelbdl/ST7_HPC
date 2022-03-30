@@ -1,16 +1,28 @@
+"""Functions for creating and displaying data
+"""
+
 import os
+from pathlib import Path
 from typing import List, Tuple, TYPE_CHECKING
 
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
     from matplotlib.axes import Axes
+    from matplotlib.collections import PathCollection
 
-def _relief() -> Tuple[np.ndarray]:
-    with open("./2D_coupe/topoIS_2D_ymax.dat", "r") as f:
+
+def _relief(
+    relief_path: str = "./2D_coupe/topoIS_2D_ymax.dat"
+) -> Tuple[np.ndarray]:
+    """Loads 2D relief
+    
+    Returns:
+        x (np.ndarray), y (np.ndarray)
+    """
+    with open(relief_path, "r") as f:
         topology = np.loadtxt(f)
     
     x = topology[..., 0]
@@ -19,8 +31,15 @@ def _relief() -> Tuple[np.ndarray]:
     return x, y
 
 
-def _relief3D() -> Tuple[np.ndarray]:
-    with open("./3D_coupe/topoIS_3D.dat", "r") as f:
+def _relief3D(
+    relief_path: str = "./3D_coupe/topoIS_3D.dat"
+) -> Tuple[np.ndarray]:
+    """Loads 3D relief
+    
+    Returns:
+        x (np.ndarray), y (np.ndarray), z (np.ndarray)
+    """
+    with open(relief_path, "r") as f:
         topology = np.loadtxt(f)
 
     x = topology[..., 0]
@@ -30,24 +49,36 @@ def _relief3D() -> Tuple[np.ndarray]:
     return x, y, z
 
 
-def plot_relief(**args) -> None:
-    x, y = _relief()
+def plot_relief(
+    relief_path: str = "./2D_coupe/topoIS_2D_ymax.dat",
+    **args
+) -> 'PathCollection':
+    """Plots 2D relief"""
+    x, y = _relief(relief_path)
 
-    plt.plot(x, y, **args)
+    relief_plot = plt.plot(x, y, **args)
+
+    return relief_plot
 
 
 def plot_relief3D(
     figandax: tuple = None, 
+    relief_path: str = "./3D_coupe/topoIS_3D.dat",
     **kargs
-) -> Tuple['Figure', 'Axes']:
+) -> Tuple['Figure', 'Axes', 'PathCollection']:
+    """Plots 3D relief
+    
+    Returns:
+        fig (mpl.Figure), ax (mpl.Axes), relief_plot 
+    """
     fig, ax = (
         plt.subplots(subplot_kw={"projection": "3d"})
         if figandax is None
         else figandax
     )
     
-    x, y, z = _relief3D()
-    idx = np.arange(0, len(x), step=100)
+    x, y, z = _relief3D(relief_path)
+    idx = np.arange(0, len(x), step=100) # divide number of vertices by 100
 
     x = x[idx]
     y = y[idx]
@@ -57,42 +88,37 @@ def plot_relief3D(
 
     return fig, ax, relief_plot
 
+
 def scatter_source(
     x_source: int = 19392, 
     y_source: int = 4290, 
     **args
-) -> None:
+) -> 'PathCollection':
+    """Plots 2D source"""
 
-    x_source = 19392
-    y_source = 4290
+    source_plot = plt.scatter(x_source, y_source, **args)
 
-    plt.scatter(x_source, y_source, **args)
+    return source_plot
 
 
 def scatter_stations(
     path_to_stations: str,
     **args
-) -> None:
+) -> 'PathCollection':
+    """Plots 2D stations"""
 
     stations = np.loadtxt(path_to_stations)
 
-    plt.scatter(stations[..., 0], stations[..., 1], **args)
+    station_plot = plt.scatter(stations[..., 0], stations[..., 1], **args)
+
+    return station_plot
 
 
-def _scatter_stations_intensity(
-    simulation: str,
-    path_to_stations: str,
+def _stations_intensity(
+    stations_name: str,
+    path_to_te: str,
     norm: str
-):
-    """
-    Implemented norms are:
-        L2 : sqrt( mean ( square ( surpression ) ) )
-        Inf : max ( abs ( surpression ) )
-    """
-    path_to_te = "./2D_coupe/" + simulation + "/TE/"
-    stations_name = [s for s in os.listdir(path_to_te) if "STATION_ST" in s]
-
-    stations = np.loadtxt(path_to_stations)
+) -> Tuple[List[int], List[float]]:
 
     ids = []
     signals = []
@@ -113,6 +139,35 @@ def _scatter_stations_intensity(
         
         signals.append(signal_trunc)
         ids.append(int(station[10:]))
+    
+    return ids, signals
+
+
+def _scatter_stations_intensity(
+    simulation: str,
+    path_to_stations: str,
+    norm: str
+) -> Tuple[np.ndarray]:
+    """Gets 2D stations norms
+
+    Implemented norms are:
+        L2 : sqrt( mean ( square ( surpression ) ) )
+        Inf : max ( abs ( surpression ) )
+
+    Returns:
+        xs (np.ndarray): x for all stations
+        signals (np.ndarray): norm for all stations
+    """
+    path_to_te = "./2D_coupe/" + simulation + "/TE/"
+    stations_name = [s for s in os.listdir(path_to_te) if "STATION_ST" in s]
+
+    stations = np.loadtxt(path_to_stations)
+
+    ids, signals = _stations_intensity(
+        stations_name=stations_name,
+        path_to_te=path_to_stations,
+        norm=norm,
+    )
 
     xs = stations[..., 1][np.array(ids)]
     signals = np.array(signals)
@@ -125,56 +180,50 @@ def scatter_stations_intensity(
     path_to_stations: str,
     norm: str,
     **args,
-):
-    """
+) -> 'PathCollection':
+    """Plots 2D stations norms
+
     Implemented norms are:
         L2 : sqrt( mean ( square ( surpression ) ) )
         Inf : max ( abs ( surpression ) )
     """
-    
     xs, signals = _scatter_stations_intensity(
         simulation,
         path_to_stations,
         norm
     )
 
-    plt.scatter(xs, signals, **args)
+    signals_plot = plt.scatter(xs, signals, **args)
+    
+    return signals_plot
 
 
 def _scatter_stations_intensity_3D(
     simulation: str,
     path_to_stations: str,
     norm: str
-):
-    """
+) -> Tuple[np.ndarray]:
+    """Gets 3D stations norms
+
     Implemented norms are:
         L2 : sqrt( mean ( square ( surpression ) ) )
         Inf : max ( abs ( surpression ) )
+
+    Returns:
+        xs (np.ndarray): x for all stations
+        ys (np.ndarray): y for all stations
+        signals (np.ndarray): norm for all stations
     """
     path_to_te = "./3D_coupe/" + simulation + "/TE/"
     stations_name = [s for s in os.listdir(path_to_te) if "STATION_ST" in s]
 
     stations = np.loadtxt(path_to_stations)
 
-    ids = []
-    signals = []
-    for station in stations_name:
-        station_array = np.loadtxt(open(os.path.join(path_to_te, station)))
-
-        signal = station_array[..., 1] - 1e5
-        try:
-            non_zero = np.min(np.where(signal != 0))
-        except:
-            non_zero = 0
-        signal_trunc = signal[non_zero:]
-
-        if norm == "L2":
-            signal_trunc = np.sqrt(np.mean(np.square(signal_trunc)))
-        elif norm == "Inf":
-            signal_trunc = np.max(np.abs(signal_trunc))
-        
-        signals.append(signal_trunc)
-        ids.append(int(station[10:]))
+    ids, signals = _stations_intensity(
+        stations_name=stations_name,
+        path_to_te=path_to_te,
+        norm=norm
+    )
 
     xs = stations[..., 1][np.array(ids)]
     ys = stations[..., 2][np.array(ids)]
@@ -187,22 +236,37 @@ def plot_station_signal(
     simulation: str, 
     station: int,
     **args,
-):
+) -> 'PathCollection':
+    """Plots signal for a given station"""
     path_to_te = "./2D_coupe/" + simulation + "/TE/"
     station = "STATION_ST" + str(station)
-    station_array = np.loadtxt(open(os.path.join(path_to_te, station)))
+
+    try:
+        station_array = np.loadtxt(open(os.path.join(path_to_te, station)))
+    except:
+        print(station + " does not exist in simulation")
+        raise IOError
 
     timeline = station_array[..., 0]
     signal = station_array[..., 1]
 
-    plt.plot(timeline, signal, **args)
+    signal_plot = plt.plot(timeline, signal, **args)
     
+    return signal_plot
+
 
 def get_highest_3D(
     x_stations: np.ndarray,
     y_stations: np.ndarray,
     signals: List[np.ndarray],
 ) -> List[np.ndarray]:
+    """Gets highest value between many signals for each station
+    
+    Useful for coloring scatter 3D plots
+
+    Returns:
+        highest_signal (List[np.ndarray]): each element is the array of values to plot for each signal
+    """
 
     highest_signals = [[] for _ in range(len(signals))]
     n_stations = len(x_stations)
@@ -223,6 +287,7 @@ def get_highest_3D(
     
     for i in range(len(highest_signals)):
         highest_signals[i] = np.array(highest_signals[i])
+
     return highest_signals
 
 
@@ -230,6 +295,13 @@ def get_highest_2D(
     x_stations: np.ndarray,
     signals: List[np.ndarray],
 ) -> List[np.ndarray]:
+    """Gets highest value between many signals for each station
+    
+    Useful for coloring scatter 2D plots
+
+    Returns:
+        highest_signal (List[np.ndarray]): each element is the array of values to plot for each signal
+    """
 
     highest_signals = [[] for _ in range(len(signals))]
     n_stations = len(x_stations)
@@ -249,4 +321,5 @@ def get_highest_2D(
     
     for i in range(len(highest_signals)):
         highest_signals[i] = np.array(highest_signals[i])
+        
     return highest_signals

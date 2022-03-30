@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from simulations import plots
+from utils import plots
 
 ### CONFIG ###
 norm = "Inf" # "Inf", "L2"

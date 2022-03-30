@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from simulations import plots
+from utils import plots
 
 ### PATH ###
 path_to_stations = "./3D_coupe/stations_3D_coupe"

@@ -3,13 +3,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-from simulations import plots
+from utils import plots
 
 ### CONFIG ###
 norm = "Inf" # "Inf", "L2"
 highest_only = True
 
-with_relief = True
+with_relief = False
 with_stations = False
 with_source = True
 with_signals = True
