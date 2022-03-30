@@ -1,3 +1,5 @@
+"""Functions for generating stations"""
+
 import csv
 import numpy as np
 
