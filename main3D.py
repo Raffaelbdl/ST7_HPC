@@ -29,7 +29,6 @@ if not os.path.isfile(path_to_stations):
         save_path=path_to_stations
     )
     
-
 ### GET RELIEF ###
 if with_relief:
     x_relief, y_relief, z_relief = plots._relief3D()
