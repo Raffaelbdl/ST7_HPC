@@ -2,7 +2,6 @@
 """
 
 import os
-from pathlib import Path
 from typing import List, Tuple, TYPE_CHECKING
 
 import numpy as np
@@ -321,5 +320,5 @@ def get_highest_2D(
     
     for i in range(len(highest_signals)):
         highest_signals[i] = np.array(highest_signals[i])
-        
+
     return highest_signals
