@@ -1,7 +1,11 @@
-import matplotlib.pyplot as plt
-import numpy as np
+"""Main python file for 2D plots"""
 
-from utils import plots
+import os 
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+from utils import plots, generate_stations
 
 ### CONFIG ###
 norm = "Inf" # "Inf", "L2"
@@ -20,6 +24,12 @@ path_to_stations = "./2D_coupe/stations_2D_coupe"
 simulation_name1 = "2D_pas_10m_meteo0"
 simulation_name2 = "2D_pas_10m_meteo1"
 simulation_name3 = "2D_pas_10m_meteo2"
+
+if not os.path.isfile(path_to_stations):
+    generate_stations.save_stations(
+        simulation=simulation_name1,
+        save_path=path_to_stations
+    )
 
 ### GET RELIEF ###
 if with_relief:

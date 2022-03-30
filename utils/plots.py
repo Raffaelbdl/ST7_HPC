@@ -164,7 +164,7 @@ def _scatter_stations_intensity(
 
     ids, signals = _stations_intensity(
         stations_name=stations_name,
-        path_to_te=path_to_stations,
+        path_to_te=path_to_te,
         norm=norm,
     )
 

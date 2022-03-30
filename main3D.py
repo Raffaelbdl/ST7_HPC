@@ -1,9 +1,12 @@
+"""Main python file for 3D plots"""
 
+import os
+
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 
-from utils import plots
+from utils import plots, generate_stations
 
 ### CONFIG ###
 norm = "Inf" # "Inf", "L2"
@@ -19,6 +22,13 @@ path_to_stations = "./3D_coupe/stations_3D_coupe"
 simulation_name1 = "3D_pas_100m_meteo0"
 simulation_name2 = "3D_pas_100m_meteo1"
 simulation_name3 = "3D_pas_100m_meteo2"
+
+if not os.path.isfile(path_to_stations):
+    generate_stations.save_stations_3D(
+        simulation=simulation_name1,
+        save_path=path_to_stations
+    )
+    
 
 ### GET RELIEF ###
 if with_relief:
