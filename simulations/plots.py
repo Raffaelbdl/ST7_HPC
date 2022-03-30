@@ -1,8 +1,13 @@
 import os
-from typing import Tuple
+from typing import List, Tuple, TYPE_CHECKING
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
+    from matplotlib.axes import Axes
 
 def _relief() -> Tuple[np.ndarray]:
     with open("./2D_coupe/topoIS_2D_ymax.dat", "r") as f:
@@ -31,8 +36,15 @@ def plot_relief(**args) -> None:
     plt.plot(x, y, **args)
 
 
-def plot_relief3D(**args) -> None:
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+def plot_relief3D(
+    figandax: tuple = None, 
+    **kargs
+) -> Tuple['Figure', 'Axes']:
+    fig, ax = (
+        plt.subplots(subplot_kw={"projection": "3d"})
+        if figandax is None
+        else figandax
+    )
     
     x, y, z = _relief3D()
     idx = np.arange(0, len(x), step=100)
@@ -41,11 +53,9 @@ def plot_relief3D(**args) -> None:
     y = y[idx]
     z = z[idx]
 
-    ax.plot_trisurf(x, y, z, **args)
+    relief_plot = ax.plot_trisurf(x, y, z, **kargs)
 
-    return fig, ax
-
-
+    return fig, ax, relief_plot
 
 def scatter_source(
     x_source: int = 19392, 
@@ -166,9 +176,10 @@ def _scatter_stations_intensity_3D(
         ids.append(int(station[10:]))
 
     xs = stations[..., 1][np.array(ids)]
+    ys = stations[..., 2][np.array(ids)]
     signals = np.array(signals)
 
-    return xs, signals
+    return xs, ys, signals
     
 
 def plot_station_signal(
@@ -185,5 +196,32 @@ def plot_station_signal(
 
     plt.plot(timeline, signal, **args)
     
-    
 
+def get_highest_3D(
+    x_stations: np.ndarray,
+    y_stations: np.ndarray,
+    signals: List[np.ndarray],
+) -> Tuple[List[np.ndarray]]:
+
+    highest_signals = [[] for _ in range(len(signals))]
+    n_stations = len(x_stations)
+
+    for i in range(n_stations):
+        indice = np.argmax(
+            [
+                signals[0][i],
+                signals[1][i],
+                signals[2][i],
+            ]
+        )
+        highest_signals[indice].append(
+            [
+                x_stations[i],
+                y_stations[i],
+                signals[indice][i],
+            ]
+        )
+    
+    for i in range(len(highest_signals)):
+        highest_signals[i] = np.array(highest_signals[i])
+    return highest_signals

@@ -20,14 +20,14 @@ _z_ = np.reshape(z, (492, 983))
 x_unique = np.unique(x)
 y_unique = np.unique(y)
 
-stepx = 1
-stepy = 1
+stepx = 15
+stepy = 10
 station_coord = []
 for i in range(492//stepy):
     for j in range(983//stepx):
-        _x = x_unique[j]
-        _y = y_unique[i]
-        _z = _z_[i][j]
+        _x = _x_[i*stepy][j*stepx]
+        _y = _y_[i*stepy][j*stepx]
+        _z = _z_[i*stepy][j*stepx]
         station_coord.append([_x, _y, _z])
 
 
