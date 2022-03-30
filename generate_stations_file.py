@@ -15,11 +15,12 @@ with open("./3D_coupe/3D_pas_100m_meteo0_corr/TE/STATION_NOM", "r") as f:
                 [
                     row[1],
                     row[2],
-                    row[3]
+                    row[3],
+                    row[0][2:]
                 ]
             )
 
 stations = np.array(stations, dtype=np.float32)
-print(stations)
+#print(stations)
 
 np.savetxt("./3D_coupe/stations_3D_coupe", stations)
