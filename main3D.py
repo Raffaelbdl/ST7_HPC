@@ -1,3 +1,4 @@
+from ast import Not
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,9 +7,9 @@ from simulations import plots
 
 ### CONFIG ###
 norm = "Inf" # "Inf", "L2"
-highest_only = False 
+highest_only = True
 
-with_relief = False
+with_relief = True
 with_stations = False
 with_source = True
 with_signals = True
@@ -20,65 +21,71 @@ simulation_name2 = "3D_pas_100m_meteo1"
 simulation_name3 = "3D_pas_100m_meteo2"
 
 ### GET RELIEF ###
-x_relief, y_relief, z_relief = plots._relief3D()
-relief_kwargs = {
-    'antialiased': True,
-    'cmap': 'terrain',
-}
+if with_relief:
+    x_relief, y_relief, z_relief = plots._relief3D()
+    relief_kwargs = {
+        'antialiased': True,
+        'cmap': 'terrain',
+    }
 
 ### GET SOURCE ###
-x_source = 14412
-y_source = 16624
-z_source = 1900
-source_kwargs = {
-    'c': 'r',
-    's': 100,
-}
+if with_source:
+    x_source = 14412
+    y_source = 16624
+    z_source = 1900
+    source_kwargs = {
+        'c': 'r',
+        's': 100,
+    }
 
 ### GET STATIONS POS ###
-stationsxyz = np.loadtxt(path_to_stations)
-x_stations = stationsxyz[..., 1]
-y_stations = stationsxyz[..., 2]
-z_stations = stationsxyz[..., 3]
-stations_kwargs = {
-    'c': 'g',
-    's': 20,
-}
+if with_stations:
+    stationsxyz = np.loadtxt(path_to_stations)
+    x_stations = stationsxyz[..., 1]
+    y_stations = stationsxyz[..., 2]
+    z_stations = stationsxyz[..., 3]
+    stations_kwargs = {
+        'c': 'g',
+        's': 20,
+    }
 
 ### GET STATIONS SIGNALS NORMS ###
-x11, y11, signals_inf1 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name1,
-    path_to_stations=path_to_stations,
-    norm="Inf"
-)
-x21, y21, signals_l21 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name1,
-    path_to_stations=path_to_stations,
-    norm="L2"
-)
-x12, y12, signals_inf2 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name2,
-    path_to_stations=path_to_stations,
-    norm="Inf"
-)
-x22, y22, signals_l22 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name2,
-    path_to_stations=path_to_stations,
-    norm="L2"
-)
-x13, y13, signals_inf3 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name3,
-    path_to_stations=path_to_stations,
-    norm="Inf"
-)
-x23, y23, signals_l23 = plots._scatter_stations_intensity_3D(
-    simulation=simulation_name3,
-    path_to_stations=path_to_stations,
-    norm="L2"
-)
+if with_signals:
+    if norm == "Inf":
+        x11, y11, signals_inf1 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name1,
+            path_to_stations=path_to_stations,
+            norm="Inf"
+        )
+        x12, y12, signals_inf2 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name2,
+            path_to_stations=path_to_stations,
+            norm="Inf"
+        )
+        x13, y13, signals_inf3 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name3,
+            path_to_stations=path_to_stations,
+            norm="Inf"
+        )
+    elif norm == "L2":
+        x21, y21, signals_l21 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name1,
+            path_to_stations=path_to_stations,
+            norm="L2"
+        )
+        x22, y22, signals_l22 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name2,
+            path_to_stations=path_to_stations,
+            norm="L2"
+        )
+        x23, y23, signals_l23 = plots._scatter_stations_intensity_3D(
+            simulation=simulation_name3,
+            path_to_stations=path_to_stations,
+            norm="L2"
+        )
 
 
-if __name__ == "__main__":
+def main():
 
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     ax.set_xlabel("X (m)")
@@ -87,7 +94,7 @@ if __name__ == "__main__":
 
     if with_relief:
         # Plot relief (does not work with legend)
-        fig, ax, relief_plot = plots.plot_relief3D(
+        fig, ax, _ = plots.plot_relief3D(
             figandax=(fig, ax), 
             **relief_kwargs
         )
@@ -120,6 +127,7 @@ if __name__ == "__main__":
         legend[1].append("Source")
     
     if with_signals:
+
         if highest_only:
             # Plot highest signals
             if norm == "Inf":
@@ -152,6 +160,10 @@ if __name__ == "__main__":
                     legend[0].append(signal_plot)
                     legend[1].append(f"Norme 2 Meteo {i}")
 
+            else:
+                raise NotImplementedError(
+                    "Norm " + norm + " is not implemented")
+
         else:
             # Plot all signals
             if norm == "Inf":
@@ -168,6 +180,7 @@ if __name__ == "__main__":
                     "Norme Infinie Meteo 2", 
                     "Norme Infinie Meteo 3",
                 ]
+            
             elif norm == "L2":
                 signal_plot1 = ax.scatter3D(x21, y21, signals_l21, c='k')
                 signal_plot2 = ax.scatter3D(x22, y22, signals_l22, c='orange')
@@ -182,13 +195,17 @@ if __name__ == "__main__":
                     "Norme 2 Meteo 2", 
                     "Norme 2 Meteo 3",
                 ]
+            
             else:
                 raise NotImplementedError(
                     "Norm " + norm + " is not implemented")
 
         ax.set_zlabel("Surpression (Pa)")
 
-    ax.legend(legend[0], legend[1])
+    ax.legend(legend[0], legend[1], loc="upper left")
     plt.show()
 
 
+if __name__ == "__main__":
+
+    main()

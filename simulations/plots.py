@@ -140,6 +140,7 @@ def scatter_stations_intensity(
 
     plt.scatter(xs, signals, **args)
 
+
 def _scatter_stations_intensity_3D(
     simulation: str,
     path_to_stations: str,
@@ -179,8 +180,8 @@ def _scatter_stations_intensity_3D(
     ys = stations[..., 2][np.array(ids)]
     signals = np.array(signals)
 
-    return xs, ys, signals
-    
+    return xs, ys, signals 
+
 
 def plot_station_signal(
     simulation: str, 
@@ -201,7 +202,7 @@ def get_highest_3D(
     x_stations: np.ndarray,
     y_stations: np.ndarray,
     signals: List[np.ndarray],
-) -> Tuple[List[np.ndarray]]:
+) -> List[np.ndarray]:
 
     highest_signals = [[] for _ in range(len(signals))]
     n_stations = len(x_stations)
@@ -209,15 +210,39 @@ def get_highest_3D(
     for i in range(n_stations):
         indice = np.argmax(
             [
-                signals[0][i],
-                signals[1][i],
-                signals[2][i],
+                signal[i] for signal in signals
             ]
         )
         highest_signals[indice].append(
             [
                 x_stations[i],
                 y_stations[i],
+                signals[indice][i],
+            ]
+        )
+    
+    for i in range(len(highest_signals)):
+        highest_signals[i] = np.array(highest_signals[i])
+    return highest_signals
+
+
+def get_highest_2D(
+    x_stations: np.ndarray,
+    signals: List[np.ndarray],
+) -> List[np.ndarray]:
+
+    highest_signals = [[] for _ in range(len(signals))]
+    n_stations = len(x_stations)
+
+    for i in range(n_stations):
+        indice = np.argmax(
+            [
+                signal[i] for signal in signals
+            ]
+        )
+        highest_signals[indice].append(
+            [
+                x_stations[i],
                 signals[indice][i],
             ]
         )
