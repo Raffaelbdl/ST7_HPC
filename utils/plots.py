@@ -1,5 +1,4 @@
-"""Functions for creating and displaying data
-"""
+"""Functions for creating and displaying data"""
 
 import os
 from typing import List, Tuple, TYPE_CHECKING
