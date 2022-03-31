@@ -8,7 +8,7 @@ def make_stations(
     step: int = 10,
     pas: float = 0.,
 ) -> np.ndarray:
-    """Gets 2D station coordinates"""
+    """Gets 2D station coordinates (x, y)"""
 
     topology = np.loadtxt(relief_path)
     x = topology[..., 0]
@@ -30,7 +30,7 @@ def make_stations_3D(
     stepy: int = 10,
     pas: float = 0.,
 ) -> np.ndarray:
-    """Gets 3D station coordinates"""
+    """Gets 3D station coordinates (x, y, z)"""
 
     topology = np.loadtxt(relief_path)
     x = topology[..., 0] # 983 unique

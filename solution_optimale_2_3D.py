@@ -5,7 +5,7 @@ import os
 import argparse
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from simulations import plots
+from utils import plots
 
 
 path_to_te = "./3D_coupe/3D_pas_100m_meteo0_corr/TE/"
